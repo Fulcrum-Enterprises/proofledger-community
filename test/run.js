@@ -116,8 +116,16 @@ function cli(env, ...args) {
   const b = await call('GET', `/api/v1/proof/${c1.json.id}/bundle`, null, H1);
   check('bundle: verify-proof top-level fields', b.code === 200 && b.json.hash === fileHash && b.json.algorithm === 'sha256' && b.json.blockchain === 'polygon' && b.json.tx_id === '0x' + fileHash && b.json.anchored === true && Array.isArray(b.json.merkle_path) && b.json.anchors.polygon.explorer_url, JSON.stringify(b.json).slice(0, 160));
   fs.writeFileSync(path.join(TMP, 'hello.txt.proof.json'), JSON.stringify(b.json, null, 2));
-  const vp = spawnSync(`uvx --from verify-proof verify-proof verify "${filePath}" --proof "${path.join(TMP, 'hello.txt.proof.json')}"`, { encoding: 'utf8', shell: true });
-  if (vp.error || vp.status === null) console.log('SKIP  verify-proof not available here (uvx)');
+  // The offline check with the real verify-proof tool: `verify-proof` on PATH (CI installs it
+  // with pip), else through uvx, else skipped.
+  const bundlePath = path.join(TMP, 'hello.txt.proof.json');
+  const candidates = [`verify-proof verify "${filePath}" --proof "${bundlePath}"`, `uvx --from verify-proof verify-proof verify "${filePath}" --proof "${bundlePath}"`];
+  let vp = null;
+  for (const cmd of candidates) {
+    const r = spawnSync(cmd, { encoding: 'utf8', shell: true });
+    if (r.status === 0 || (r.status !== 127 && !/not found|not recognized/i.test((r.stderr || '') + (r.stdout || '')))) { vp = r; break; }
+  }
+  if (!vp) console.log('SKIP  verify-proof not available here');
   else check('verify-proof verifies the file against the bundle offline', vp.status === 0 && /VERIFIED/.test(vp.stdout), (vp.stdout || vp.stderr).trim().slice(0, 160));
 
   // 8. batch
