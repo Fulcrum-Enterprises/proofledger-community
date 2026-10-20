@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Verify a file · ProofLedger Community</title>
+  <link rel="stylesheet" href="/style.css" />
+</head>
+<body>
+  <main class="wrap">
+    <header class="top"><a class="brand" href="/">ProofLedger Community</a><nav><a href="/verify.html">Verify a file</a></nav></header>
+    <h1>Verify a file</h1>
+    <p>The file is hashed here in your browser and never uploaded. Only the 64-character fingerprint is sent to look up a proof.</p>
+    <div class="drop" id="drop">Drop a file here, or click to choose one</div>
+    <input type="file" id="file" style="display:none" />
+    <p style="margin-top:14px">Or paste a SHA-256 hash:</p>
+    <input type="text" id="hash" placeholder="64 hex characters" />
+    <p style="margin-top:10px"><button class="btn" id="go">Look up</button></p>
+    <div id="out"></div>
+  </main>
+  <script>
+    var drop = document.getElementById('drop'), file = document.getElementById('file'), hashIn = document.getElementById('hash'), out = document.getElementById('out');
+    function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+    function hex(buf) { return Array.from(new Uint8Array(buf)).map(function (b) { return b.toString(16).padStart(2, '0'); }).join(''); }
+    function lookup(h) {
+      h = String(h || '').trim().toLowerCase();
+      if (!/^[a-f0-9]{64}$/.test(h)) { out.innerHTML = '<p class="bad">That is not a SHA-256 hash (64 hex characters).</p>'; return; }
+      out.innerHTML = '<p class="muted">Looking up ' + esc(h) + '…</p>';
+      fetch('/api/v1/verify?hash=' + h).then(function (r) { return r.json(); }).then(function (d) {
+        if (!d.found) { out.innerHTML = '<div class="bad">No proof on this server for <span class="mono">' + esc(h) + '</span>.</div>'; return; }
+        var p = d.proof;
+        out.innerHTML = '<div class="ok">A proof exists for this fingerprint.</div><div class="card">' +
+          '<div class="row"><b>Fingerprint</b><span class="mono">' + esc(p.sha256) + '</span></div>' +
+          '<div class="row"><b>Recorded</b><span>' + esc(p.created_at) + '</span></div>' +
+          '<div class="row"><b>Polygon</b><span>' + (p.chain_tx ? 'anchored ' + esc(p.polygon_anchored_at || '') + ' · <a href="' + esc(d.explorer_url) + '" rel="noopener">transaction</a>' : 'anchoring pending') + '</span></div>' +
+          '<div class="row"><b>Certificate</b><span><a href="' + esc(d.certificate_url) + '">' + esc(p.public_cert_id || d.certificate_url) + '</a></span></div>' +
+          '</div>';
+      }).catch(function () { out.innerHTML = '<p class="bad">Could not reach the server.</p>'; });
+    }
+    function hashFile(f) {
+      out.innerHTML = '<p class="muted">Hashing ' + esc(f.name) + '…</p>';
+      f.arrayBuffer().then(function (buf) { return crypto.subtle.digest('SHA-256', buf); }).then(function (d) { var h = hex(d); hashIn.value = h; lookup(h); });
+    }
+    drop.addEventListener('click', function () { file.click(); });
+    file.addEventListener('change', function () { if (file.files[0]) hashFile(file.files[0]); });
+    drop.addEventListener('dragover', function (e) { e.preventDefault(); drop.classList.add('on'); });
+    drop.addEventListener('dragleave', function () { drop.classList.remove('on'); });
+    drop.addEventListener('drop', function (e) { e.preventDefault(); drop.classList.remove('on'); if (e.dataTransfer.files[0]) hashFile(e.dataTransfer.files[0]); });
+    document.getElementById('go').addEventListener('click', function () { lookup(hashIn.value); });
+    var q = new URLSearchParams(window.location.search).get('hash');
+    if (q) { hashIn.value = q; lookup(q); }
+  </script>
+</body>
+</html>

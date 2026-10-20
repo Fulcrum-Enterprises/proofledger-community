@@ -1,0 +1,27 @@
+:root { --bg: #f6f8fa; --card: #fff; --t1: #0f172a; --t2: #334155; --t3: #64748b; --line: #e2e8f0; --accent: #0f766e; }
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--t1); font: 15px/1.6 -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Roboto, sans-serif; }
+.wrap { max-width: 760px; margin: 0 auto; padding: 24px 16px 64px; }
+.top { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 8px 0 24px; border-bottom: 1px solid var(--line); margin-bottom: 28px; }
+.brand { font-weight: 700; color: var(--t1); text-decoration: none; }
+nav a { margin-left: 16px; color: var(--t2); text-decoration: none; }
+nav a:hover { color: var(--accent); }
+h1 { font-size: 26px; margin: 0 0 12px; }
+h2 { font-size: 18px; margin: 28px 0 8px; }
+p { margin: 0 0 12px; color: var(--t2); }
+a { color: var(--accent); }
+code { font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 13px; background: #eef2f6; padding: 1px 5px; border-radius: 4px; }
+pre { background: #0f172a; color: #e2e8f0; padding: 14px 16px; border-radius: 10px; overflow-x: auto; font-size: 13px; }
+pre code { background: none; color: inherit; padding: 0; }
+.muted { color: var(--t3); font-size: 13px; }
+.card { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 20px 22px; margin: 16px 0; }
+.row { display: grid; grid-template-columns: 180px 1fr; gap: 8px 16px; padding: 8px 0; border-bottom: 1px solid var(--line); font-size: 14px; }
+.row:last-child { border-bottom: 0; }
+.row b { color: var(--t3); font-weight: 500; }
+.mono { font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 13px; word-break: break-all; }
+.drop { border: 2px dashed var(--line); border-radius: 12px; padding: 28px; text-align: center; background: var(--card); cursor: pointer; }
+.drop.on { border-color: var(--accent); }
+.ok { color: #065f46; background: #ecfdf5; border: 1px solid #a7f3d0; padding: 10px 12px; border-radius: 9px; }
+.bad { color: #991b1b; background: #fef2f2; border: 1px solid #fecaca; padding: 10px 12px; border-radius: 9px; }
+.btn { display: inline-block; padding: 8px 14px; border-radius: 8px; background: var(--accent); color: #fff; text-decoration: none; font-weight: 600; font-size: 14px; border: 0; cursor: pointer; }
+input[type=text] { width: 100%; padding: 9px 11px; border: 1px solid var(--line); border-radius: 8px; font: inherit; }

@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Proof certificate · ProofLedger Community</title>
+  <link rel="stylesheet" href="/style.css" />
+</head>
+<body>
+  <main class="wrap">
+    <header class="top"><a class="brand" href="/">ProofLedger Community</a><nav><a href="/verify.html">Verify a file</a></nav></header>
+    <h1>Proof certificate</h1>
+    <p>A readable summary of one proof: a file's SHA-256 fingerprint and the Polygon transaction it was anchored in. The record is the public transaction; this page is a convenience.</p>
+    <div id="out" class="muted">Loading…</div>
+  </main>
+  <script>
+    function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+    var id = window.location.pathname.split('/').pop();
+    fetch('/api/cert/' + encodeURIComponent(id)).then(function (r) { return r.json().then(function (d) { return { ok: r.ok, d: d }; }); }).then(function (x) {
+      var out = document.getElementById('out');
+      if (!x.ok) { out.className = 'bad'; out.textContent = x.d.error || 'Certificate not found.'; return; }
+      var p = x.d;
+      out.className = 'card';
+      out.innerHTML =
+        '<div class="row"><b>Certificate ID</b><span class="mono">' + esc(p.public_cert_id || p.id) + '</span></div>' +
+        '<div class="row"><b>File name</b><span>' + esc(p.filename) + '</span></div>' +
+        '<div class="row"><b>SHA-256</b><span class="mono">' + esc(p.sha256) + '</span></div>' +
+        '<div class="row"><b>Recorded (UTC)</b><span>' + esc(p.created_at) + '</span></div>' +
+        '<div class="row"><b>Anchored on Polygon</b><span>' + (p.chain_tx ? esc(p.polygon_anchored_at || '') + ' · <a href="' + esc(x.d.explorer_url) + '" rel="noopener">view the transaction</a>' : 'pending') + '</span></div>' +
+        (p.chain_tx ? '<div class="row"><b>Transaction</b><span class="mono">' + esc(p.chain_tx) + '</span></div>' : '') +
+        '<div class="row"><b>Bundle</b><span><a href="' + esc(x.d.bundle_url) + '">download the proof bundle</a> and check it offline with <code>verify-proof verify &lt;file&gt; --proof bundle.json</code></span></div>' +
+        '<div class="row"><b>Shows</b><span>that a file with this exact fingerprint existed by the anchor time and has not changed since. Not who made it.</span></div>';
+    }).catch(function () { var out = document.getElementById('out'); out.className = 'bad'; out.textContent = 'Could not reach the server.'; });
+  </script>
+</body>
+</html>

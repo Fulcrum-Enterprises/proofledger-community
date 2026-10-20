@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ProofLedger Community</title>
+  <link rel="stylesheet" href="/style.css" />
+</head>
+<body>
+  <main class="wrap">
+    <header class="top"><a class="brand" href="/">ProofLedger Community</a><nav><a href="/verify.html">Verify a file</a><a href="https://github.com/Fulcrum-Enterprises/proofledger-community">Source</a></nav></header>
+    <h1>Proof of existence, on your own server</h1>
+    <p>This server records the SHA-256 fingerprint of a file on the Polygon blockchain and issues a certificate and a proof bundle. A proof shows that a file with that exact fingerprint existed by the anchor time and has not changed since. It does not show who made the file.</p>
+    <h2>Use the API</h2>
+    <pre><code>curl -X POST <span data-origin></span>/api/v1/proof \
+  -H "Authorization: Bearer sk_..." -H "Content-Type: application/json" \
+  -d '{"sha256": "&lt;64 hex characters&gt;", "filename": "contract.pdf"}'</code></pre>
+    <p>Keys are made on the server with <code>proofledger key create &lt;email&gt;</code>. The API is the same as proofledger.io's: <code>POST /api/v1/proof</code>, <code>POST /api/v1/proofs/batch</code>, <code>GET /api/v1/proof/:id</code>, <code>GET /api/v1/proof/:id/bundle</code>, <code>GET /api/v1/proofs</code>, <code>GET /api/v1/verify?hash=</code>, and webhooks under <code>/api/v1/webhooks</code>. Full reference: <a href="https://proofledger.io/api.html">proofledger.io/api</a>.</p>
+    <h2>Check a proof without this server</h2>
+    <p>Download the bundle, then <code>pip install verify-proof</code> and <code>verify-proof verify &lt;file&gt; --proof bundle.json</code>. The transaction on Polygon carries the hash in its input data; the block time is the anchor time.</p>
+    <p class="muted" id="status">Checking server…</p>
+  </main>
+  <script>
+    document.querySelectorAll('[data-origin]').forEach(function (el) { el.textContent = window.location.origin; });
+    fetch('/api/health').then(function (r) { return r.json(); }).then(function (h) {
+      var s = document.getElementById('status');
+      s.textContent = 'Server ' + (h.version || '') + ', anchoring mode ' + (h.anchoring && h.anchoring.mode) + (h.chain && h.chain.chain ? ' on ' + h.chain.chain : '') + ', ' + (h.anchoring ? h.anchoring.pending : '?') + ' proof(s) waiting to anchor.';
+    }).catch(function () { document.getElementById('status').textContent = 'Could not reach /api/health.'; });
+  </script>
+</body>
+</html>
