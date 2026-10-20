@@ -1,5 +1,6 @@
 services:
   proofledger:
+    image: ghcr.io/fulcrum-enterprises/proofledger-community:0.1.0
     build: .
     restart: unless-stopped
     ports:

@@ -18,7 +18,7 @@ cp .env.example .env        # set PUBLIC_BASE_URL, POLYGON_RPC_URL and POLYGON_P
 npm start
 ```
 
-Or with Docker: `cp .env.example .env`, edit it, then `docker compose up -d`. The database is one SQLite file in the `proofledger-data` volume. Back it up.
+Or with Docker: `cp .env.example .env`, edit it, then `docker compose up -d`. That pulls the prebuilt image `ghcr.io/fulcrum-enterprises/proofledger-community` (linux/amd64 and linux/arm64, built by this repository's workflow from each tagged release); `docker compose up -d --build` builds it from your checkout instead. The database is one SQLite file in the `proofledger-data` volume. Back it up.
 
 Make an account and a key on the server:
 
@@ -27,7 +27,7 @@ node src/cli.js user add you@example.com
 node src/cli.js key create you@example.com "laptop"
 ```
 
-The key is printed once. Then:
+The key is printed once. In Docker, run the same commands as `docker compose exec proofledger node src/cli.js ...`. Then:
 
 ```bash
 curl -X POST http://localhost:3000/api/v1/proof \
