@@ -4,14 +4,14 @@
   "description": "Self-hostable proof-of-existence server: anchor SHA-256 hashes on Polygon, issue certificates and verify-proof bundles, with the same API as proofledger.io.",
   "license": "AGPL-3.0-only",
   "repository": "github:Fulcrum-Enterprises/proofledger-community",
-  "homepage": "https://proofledger.io/community",
+  "homepage": "https://github.com/Fulcrum-Enterprises/proofledger-community",
   "main": "src/server.js",
   "bin": {
     "proofledger": "src/cli.js"
   },
   "scripts": {
     "start": "node src/server.js",
-    "test": "node test/run.js",
+    "test": "node test/run.js && node test/webhooks.js",
     "scan": "node scripts/scan.js"
   },
   "engines": {

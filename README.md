@@ -76,8 +76,8 @@ Limits (`.env`): `PROOF_MONTHLY_CAP` per account (0 = none), `API_KEY_LIMIT_PER_
 
 ## Clients and tools
 
-- [`verify-proof`](https://github.com/Fulcrum-Enterprises/verify-proof) (PyPI, npm): offline verification, Python and Node API clients (`base_url` points at your server), an MCP server, agent run receipts.
-- The [GitHub Action](https://github.com/marketplace/actions/proofledger-release-timestamp) takes an `api-base` input.
+- [`verify-proof`](https://github.com/Fulcrum-Enterprises/verify-proof) (PyPI, npm): offline verification, and API clients that take your server's address (`verify-proof create --base-url`, Python `base_url=`, Node `new ProofLedger({ baseUrl })`), an MCP server, agent run receipts.
+- The [GitHub Action](https://github.com/marketplace/actions/proofledger-release-timestamp) takes an `api-url` input.
 - Anything that speaks the proofledger.io API.
 
 ## Pages

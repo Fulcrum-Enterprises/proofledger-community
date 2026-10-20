@@ -30,6 +30,7 @@ const ALLOW = [
   /sk_\.\.\./,
   /@example\.com|<email>/,                 // reserved example domain (RFC 2606)
   /\['\d+\.\d+\.\d+\.\d+', \d+\]/,          // the SSRF block list in src/webhooks.js
+  /scan:allow/,                              // a line that says so (tests that need private addresses)
 ];
 
 let hits = 0;
